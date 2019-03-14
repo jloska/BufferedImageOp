@@ -165,6 +165,20 @@ public class Util {
      * @param src obraz źródłowy
      * @return nowy obraz w tym samym modelu kolorów zawierający obraz oryginalny odbity poziomo
      */
+    
+        public static BufferedImage zrotuj(final BufferedImage src)
+    {
+        BufferedImage ret = czystyObraz(src);
+        int w = src.getWidth();
+        int h = src.getHeight();
+        
+        Graphics2D g = ret.createGraphics();
+        g.rotate(45);
+//        g.drawImage(src, 0, 0, w, h, 
+//                         w, 0, 0, h, null);
+        
+        return ret;
+    }
     public static BufferedImage odbijPoziomo(final BufferedImage src)
     {
         BufferedImage ret = czystyObraz(src);
@@ -378,7 +392,7 @@ public class Util {
      */
     public static enum typFiltra
     {
-        SKALUJ, ODBIJ_POZIOMO, ODBIJ_PIONOWO, OPISZ, MNOZ;
+        SKALUJ, ODBIJ_POZIOMO, ODBIJ_PIONOWO, ROTUJ, OPISZ, MNOZ;
     }
     
 
@@ -419,6 +433,7 @@ public class Util {
         {
             case ODBIJ_PIONOWO:
             case ODBIJ_POZIOMO:
+            case ROTUJ:
                 // te filtry się nie zmieniają, więc za każdym razem, jak ktoś
                 // poprosi, to dostanie ten sam
                 if (!gotoweFiltry.containsKey(typ))
@@ -616,6 +631,9 @@ public class Util {
 
             switch(this.typ)
             {
+                 case ROTUJ:
+                    ret = Util.zrotuj(src);
+                    break;
                 case ODBIJ_POZIOMO:
                     ret = Util.odbijPoziomo(src);
                     break;
@@ -659,6 +677,7 @@ public class Util {
                 //
                 // ale w tym [laboratoryjnym] przypadku nie ma większego sensu
                 
+                case ROTUJ:
                 case ODBIJ_PIONOWO:
                 case ODBIJ_POZIOMO:
                     throw new UnsupportedOperationException("Destination " + 
@@ -709,7 +728,7 @@ public class Util {
         // 3. NASZE odbicia
         op.put("odbicieV", Util.dajFiltr(Util.typFiltra.ODBIJ_PIONOWO, null));
         op.put("odbicieH", Util.dajFiltr(Util.typFiltra.ODBIJ_POZIOMO, null));
-        
+        op.put("rotacja", Util.dajFiltr(Util.typFiltra.ROTUJ, null));
         
         // 4. NASZE skalowanie
         HashMap<String, String> param = new HashMap<String, String>();
